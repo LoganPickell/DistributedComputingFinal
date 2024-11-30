@@ -1,44 +1,53 @@
 using UnityEngine;
-using Unity.Netcode;
 
-public class OwnerComponentManager : NetworkBehaviour
+public class OwnerComponentManager : MonoBehaviour
 {
     private Camera playerCamera;
     private AudioListener audioListener;
-    
-    [SerializeField] private Camera _camera;
-    private Camera main_camera;
-    
+
+    [SerializeField] private Camera _camera; // Reference to this player's camera
+    private Camera mainCamera;
+
     private void Awake()
     {
         // Find the camera with the "MainCamera" tag and assign it to the mainCamera field
-        main_camera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
+        mainCamera = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
     }
-    public override void OnNetworkSpawn()
+
+    private void Start()
     {
-        base.OnNetworkSpawn();
-        if (!IsOwner) { return; } // ALL players will read this method, only player owner will execute past this line
-        _camera.enabled = true; // only enable YOUR PLAYER'S camera, all others will stay disabled
-        main_camera.GetComponent<AudioListener>().enabled = false;
-        main_camera.enabled = false;
-    }
-    
-    void Start()
-    {
-        // Get the camera and audio listener components
+        // Get the camera and audio listener components from the child objects
         playerCamera = GetComponentInChildren<Camera>();
         audioListener = GetComponentInChildren<AudioListener>();
 
-        // Enable camera and audio listener only if this is the local player
-        if (IsOwner)
+        // Check if this is the local player by comparing to the main camera's perspective
+        if (IsLocalPlayer())
         {
+            // Enable this player's camera and audio listener
             playerCamera.enabled = true;
             audioListener.enabled = true;
+
+            // Disable the main camera
+            if (mainCamera != null)
+            {
+                mainCamera.enabled = false;
+                if (mainCamera.GetComponent<AudioListener>() != null)
+                    mainCamera.GetComponent<AudioListener>().enabled = false;
+            }
         }
         else
         {
+            // Disable this player's camera and audio listener
             playerCamera.enabled = false;
             audioListener.enabled = false;
         }
+    }
+
+    // Example method to check if this is the local player
+    // Replace this logic as needed to identify the "local player"
+    private bool IsLocalPlayer()
+    {
+        // Example condition: Add logic for distinguishing local player (e.g., by tag, player ID, etc.)
+        return true; // Replace with your condition to identify the local player
     }
 }

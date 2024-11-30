@@ -27,7 +27,7 @@ public class ThirdPersonController : NetworkBehaviour
     [Space]
     [Tooltip("Force that pulls the player down. Changing this value causes all movement, jumping and falling to be changed as well.")]
     public float gravity = 9.8f;
-
+    
     float jumpElapsedTime = 0;
 
     // Player states
@@ -42,9 +42,13 @@ public class ThirdPersonController : NetworkBehaviour
     bool inputCrouch;
     bool inputSprint;
 
+    private DoorTrigger currentDoor;
+    public KeyCode InteractKey = KeyCode.E;
+
     Animator animator;
     CharacterController cc;
     public Camera cam;
+    
     
 
     void Start()
@@ -111,7 +115,23 @@ public class ThirdPersonController : NetworkBehaviour
         }
 
         HeadHittingDetect();
+        
+        if (Input.GetKeyDown(InteractKey) && currentDoor != null && currentDoor.IsPlayerInRange())
+        {
+            OpenDoor(currentDoor.doorAnimator);
+        }
+    }
 
+    public void SetCurrentDoor(DoorTrigger door)
+    {
+        currentDoor = door;
+    }
+    void OpenDoor(Animator doorAnimator)
+    {
+        if (doorAnimator != null)
+        {
+            doorAnimator.SetTrigger("Open");
+        }
     }
 
 

@@ -34,6 +34,7 @@ namespace Pathfinding.Examples {
 		IAstarAI ai;
 		Transform tr;
 
+
 		protected override void Awake () {
 			base.Awake();
 			ai = GetComponent<IAstarAI>();
@@ -57,6 +58,7 @@ namespace Pathfinding.Examples {
 		}
 
 		protected void Update () {
+		
 			if (ai.reachedEndOfPath) {
 				if (!isAtDestination) OnTargetReached();
 				isAtDestination = true;
